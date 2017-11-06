@@ -5,6 +5,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.util.EventListener;
 
 /**
  * Uma tela de Menu Principal do jogo.
@@ -15,7 +23,12 @@ public class MenuScreen extends BaseScreen {
 
     private static final int NUMBER_OF_TILED_BACKGROUND_TEXTURE = 7;
     private TextureRegion background;
-
+    //Changes
+    private Stage stage;
+    private Texture myTexture;
+    private TextureRegion myTextureRegion;
+    private TextureRegionDrawable myTexRegionDrawable;
+    private ImageButton button;
     /**
      * Cria uma nova tela de menu.
      *
@@ -24,6 +37,7 @@ public class MenuScreen extends BaseScreen {
      */
     public MenuScreen(Game game, BaseScreen previous) {
         super(game, previous);
+      
     }
 
     /**
@@ -51,6 +65,17 @@ public class MenuScreen extends BaseScreen {
                 (int) (background.getTexture().getHeight()
                         * NUMBER_OF_TILED_BACKGROUND_TEXTURE
                         / Config.DESIRED_ASPECT_RATIO));
+        myTexture = new Texture(Gdx.files.internal("menu/play-button.jpg"));
+        myTextureRegion = new TextureRegion(myTexture);
+        myTexRegionDrawable = new TextureRegionDrawable(myTextureRegion);
+        button = new ImageButton(myTexRegionDrawable); 
+
+        stage = new Stage(new ScreenViewport()); 
+        stage.addActor(button); 
+        Gdx.input.setInputProcessor(stage);
+        button.setPosition(Gdx.graphics.getWidth()/2-125,Gdx.graphics.getHeight()/2-125);
+
+        
     }
 
     /**
@@ -60,9 +85,22 @@ public class MenuScreen extends BaseScreen {
     public void handleInput() {
         // se qualquer interação é feita (teclado, mouse pressionado, tecla
         // tocada), navega para a próxima tela (de jogo)
-        if (Gdx.input.justTouched()) {
+     
+        /*    if (Gdx.input.justTouched()) {
             navigateToMicroGameScreen();
-        }
+        }*/
+        button.addListener(new InputListener() {
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+               // outputLabel.setText("Press a Button");
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+               // outputLabel.setText("Pressed Text Button");
+                navigateToMicroGameScreen();
+                return true;
+            }
+        });
     }
 
     /**
@@ -87,7 +125,10 @@ public class MenuScreen extends BaseScreen {
                 viewport.getWorldHeight());
         drawCenterAlignedText("Pressione qualquer tecla para jogar",
                 viewport.getWorldHeight() * 0.35f);
-        batch.end();
+        batch.end();    
+        stage.act(Gdx.graphics.getDeltaTime()); //Perform ui logic
+        stage.draw(); //Draw the ui
+        
     }
 
     /**
