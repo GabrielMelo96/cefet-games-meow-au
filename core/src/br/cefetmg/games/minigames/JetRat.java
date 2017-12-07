@@ -39,13 +39,13 @@ public class JetRat extends MiniGame {
     private float screenHeight;
     private float posX, posY;
     int srcX, troca;
-<<<<<<< master
+//<<<<<<< master
     float aceleracao, velocidade;
     private MySound meon;
     int cont;
     int difficulty;
     
->>>>>>> master
+//>>>>>>> master
     public JetRat(BaseScreen screen,
             MiniGameStateObserver observer, float difficulty) {
          
@@ -81,9 +81,9 @@ public class JetRat extends MiniGame {
 
         }, 0, (float) Math.random() + 0.7f);
         srcX = 0;
-<<<<<<< master
+//<<<<<<< master
         velocidade = -1 * WORLD_HEIGHT * 0.004f;
->>>>>>> master
+//>>>>>>> master
         meon.play(0.2f);
     }
 
@@ -149,19 +149,19 @@ public class JetRat extends MiniGame {
        
         mouse.update(dt);
         srcX += 5;
-<<<<<<< master
+//<<<<<<< master
         if (posY < screenHeight + 2) {
             posY -= velocidade ;
         }else{
             super.challengeFailed();
             meon.stop();
->>>>>>> master
+//>>>>>>> master
         }
         if (posX > screenWidth / 2 - 16) {
             posX -= 0.5;
         }
         if (Gdx.input.justTouched()) {
-<<<<<<< master
+//<<<<<<< master
             cont=10;
             posX += 2;
         }
@@ -170,7 +170,7 @@ public class JetRat extends MiniGame {
             cont--;
             posY -= WORLD_HEIGHT * 0.012;
         }
->>>>>>> master
+//>>>>>>> master
         // atualiza os inimigos (quadro de animação + colisão com dentes)
         for (int i = 0; i < this.enemies.size; i++) {
             Tube tube = this.enemies.get(i);
@@ -243,7 +243,7 @@ public class JetRat extends MiniGame {
         }
     }
 
-    class Tube extends MultiAnimatedSprite {
+    class Tube extends AnimatedSprite {
 
         private Vector2 speed;
 
@@ -251,8 +251,22 @@ public class JetRat extends MiniGame {
         private static final int FRAME_HEIGHT = 305;
         private int size;
         private int state;
-
-        public Tube() {
+        
+        public Tube(final Texture toothbrushTexture) {
+            super(new Animation(0.22f, new Array<TextureRegion>() {
+                {
+                    TextureRegion[][] frames = TextureRegion.split(
+                            toothbrushTexture, FRAME_WIDTH, FRAME_HEIGHT);
+                    super.addAll(new TextureRegion[]{
+                        frames[0][0],
+                        frames[0][1]
+                        });
+                }
+            }));
+            super.getAnimation().setPlayMode(Animation.PlayMode.LOOP);
+            super.setAutoUpdate(true);
+        }
+       /* public Tube() {
             super(null, null);
         }
         public Tube(final Texture tubesSpritesheet) {
@@ -273,18 +287,20 @@ public class JetRat extends MiniGame {
                 }
             }, "walking");
 
-        }
+        }*/
 
         public void changePicture() {
-            this.startAnimation("acordado");
+    //        this.startAnimation("acordado");
         }
 
-        @Override
-        public void update(float dt) {
+        Vector2 getHeadPosition() {
+            return new Vector2(
+                    this.getX() + this.getWidth(),
+                    this.getY() + this.getHeight());
+        }
 
-            super.update(dt);
-            super.setPosition(super.getX() + this.speed.x * dt,
-                    super.getY() + this.speed.y * dt);
+        float getHeadDistanceTo(float enemyX, float enemyY) {
+            return getHeadPosition().dst(enemyX, enemyY);
         }
 
         public void setSize(int size) {
